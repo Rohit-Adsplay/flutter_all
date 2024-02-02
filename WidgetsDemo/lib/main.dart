@@ -9,7 +9,7 @@ class MainClass extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
+        debugShowCheckedModeBanner: true,
         title: "UI Widgets",
         home: Scaffold(
             appBar: AppBar(
