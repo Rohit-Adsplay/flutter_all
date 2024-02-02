@@ -1,5 +1,7 @@
 # Flutter Snippets
 
+Download Link : https://plugins.jetbrains.com/plugin/12348-flutter-snippets
+
 ![JetBrains IntelliJ plugins](https://img.shields.io/jetbrains/plugin/d/12348-flutter-snippets.svg?style=plastic)
 
 ![](images/flutter_snippets.png)
