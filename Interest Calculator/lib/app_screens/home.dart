@@ -6,10 +6,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String _principalAmount = "";
-  String _rateOfInterest = "";
-  String _term = "";
-  String _selectedCurrency = "INR";
+  var textToDisplay = "";
+  var _formKey = GlobalKey<FormState>();
+
+  TextEditingController _principalAmountTC = TextEditingController();
+  TextEditingController _rateOfInterestTC = TextEditingController();
+  TextEditingController _termTC = TextEditingController();
 
   var _currencies = [
     'INR',
@@ -19,74 +21,112 @@ class _HomeState extends State<Home> {
     'CAD',
   ];
 
+  String _selectedCurrency = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCurrency = _currencies[0];
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        margin: EdgeInsets.all(20.0),
+    TextStyle? textStyle = Theme.of(context).textTheme.titleMedium;
+
+    return Form(
+      key: _formKey,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
         child: ListView(
           children: <Widget>[
-            Image.asset(
-              "images/bank.png",
-              height: 200,
-              width: 200,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 50.0),
+              child: Image.asset(
+                "images/bank.png",
+                height: 200,
+                width: 200,
+              ),
             ),
-            Container(
-              margin: EdgeInsets.all(5.0),
-              child: TextField(
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: TextFormField(
+                validator: (value) {
+                  if (int.tryParse(value!) == null) {
+                    return 'Please Enter a Number';
+                  } else if (value.isEmpty) {
+                    return 'Please Enter a principal Amount';
+                  }else if (int.tryParse(value)! > 1000000) {
+                    return "Max Amount is 1000000";
+                  }
+                },
+                controller: _principalAmountTC,
+                style: textStyle,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                     label: const Text("Principal Amount"),
+                    labelStyle: textStyle,
                     hintText: "Enter Principal Amount",
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0))),
-                onChanged: (String userInput) {
-                  setState(() {
-                    _principalAmount = userInput;
-                  });
-                },
+                        borderRadius: BorderRadius.circular(5.0)),
+                    errorStyle: TextStyle(color: Colors.pink)),
               ),
             ),
-            Container(
-              margin: EdgeInsets.all(5.0),
-              child: TextField(
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: TextFormField(
+                validator: (value) {
+                  if (int.tryParse(value!) == null) {
+                    return 'Please Enter a Number';
+                  } else if (value!.isEmpty) {
+                    return 'Please Enter a ROI (in %)';
+                  }else if (int.tryParse(value)! > 20) {
+                    return "Max Interest Rate is 20%";
+                  }
+                },
+                controller: _rateOfInterestTC,
+                style: textStyle,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                     label: const Text("Rate of Interest"),
+                    labelStyle: textStyle,
                     hintText: "Enter Rate of Interest in (%)",
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0))),
-                onChanged: (String userInput) {
-                  setState(() {
-                    _rateOfInterest = userInput;
-                  });
-                },
+                        borderRadius: BorderRadius.circular(5.0)),
+                    errorStyle: TextStyle(color: Colors.pink)),
               ),
             ),
             Row(
               children: <Widget>[
                 Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(5.0),
-                    child: TextField(
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (int.tryParse(value!) == null) {
+                          return 'Please Enter a Number';
+                        } else if (value!.isEmpty) {
+                          return 'Please Enter Number of Years';
+                        } else if (int.tryParse(value)! > 30) {
+                          return "Tenure can't be more than 30 Years";
+                        }
+                      },
+                      controller: _termTC,
+                      style: textStyle,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                          label: const Text("Term"),
-                          hintText: "Enter Term in Years",
+                          label: const Text("Tenure"),
+                          labelStyle: textStyle,
+                          hintText: "Enter Tenure in Years",
                           border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0))),
-                      onChanged: (String userInput) {
-                        setState(() {
-                          _term = userInput;
-                        });
-                      },
+                              borderRadius: BorderRadius.circular(5.0)),
+                          errorStyle: TextStyle(color: Colors.pink)),
                     ),
                   ),
                 ),
                 Container(margin: EdgeInsets.all(5.0)),
                 Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(5.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
                     child: DropdownButtonFormField(
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -107,9 +147,7 @@ class _HomeState extends State<Home> {
 
                       onChanged: (String? newValue) {
                         //Code will execute after selection from list
-                        setState(() {
-                          _selectedCurrency = newValue!;
-                        });
+                        _onCurrencySelected(newValue);
                       },
                     ),
                   ),
@@ -120,12 +158,12 @@ class _HomeState extends State<Home> {
             Row(
               children: <Widget>[
                 Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(5.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
                     child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.all(20.0),
-                          backgroundColor: Colors.deepPurple,
+                          backgroundColor: Theme.of(context).primaryColor,
                           elevation: 10.0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(5.0),
@@ -142,13 +180,19 @@ class _HomeState extends State<Home> {
                             color: Colors.white,
                           ),
                         ),
-                        onPressed: () {}),
+                        onPressed: () {
+                          setState(() {
+                            if (_formKey.currentState!.validate()) {
+                              this.textToDisplay = _calculateInterest();
+                            }
+                          });
+                        }),
                   ),
                 ),
                 Container(margin: EdgeInsets.all(5.0)),
                 Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(5.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
                     child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.all(20.0),
@@ -169,7 +213,11 @@ class _HomeState extends State<Home> {
                             color: Colors.black,
                           ),
                         ),
-                        onPressed: () {}),
+                        onPressed: () {
+                          setState(() {
+                            _reset();
+                          });
+                        }),
                   ),
                 ),
               ],
@@ -177,10 +225,11 @@ class _HomeState extends State<Home> {
             Container(margin: EdgeInsets.only(top: 25.0, bottom: 25.0)),
             Center(
               child: Text(
-                "PlaceHolder",
+                this.textToDisplay,
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -188,5 +237,31 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+  }
+
+  void _onCurrencySelected(String? newValue) {
+    setState(() {
+      this._selectedCurrency = newValue!;
+    });
+  }
+
+  String _calculateInterest() {
+    double _principalAmount = double.parse(_principalAmountTC.text);
+    double _rateOfInterest = double.parse(_rateOfInterestTC.text);
+    double _term = double.parse(_termTC.text);
+
+    double totalPayableAmount =
+        _principalAmount + (_principalAmount * _rateOfInterest * _term) / 100;
+    String result =
+        'After $_term years, Your investment will be worth $totalPayableAmount $_selectedCurrency';
+    return result;
+  }
+
+  void _reset() {
+    _principalAmountTC.text = "";
+    _rateOfInterestTC.text = "";
+    _termTC.text = "";
+    textToDisplay = "";
+    _selectedCurrency = _currencies[0];
   }
 }

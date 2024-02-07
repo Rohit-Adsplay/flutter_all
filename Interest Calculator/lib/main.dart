@@ -8,7 +8,8 @@ class MainClass extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(primaryColor: Colors.indigoAccent),
+        theme: ThemeData(
+            primaryColor: Colors.indigoAccent, brightness: Brightness.dark),
         title: "Interest Calculator",
         home: Scaffold(
           appBar: AppBar(
